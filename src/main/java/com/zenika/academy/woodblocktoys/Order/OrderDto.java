@@ -1,4 +1,4 @@
-package com.zenika.academy.blocks.Order;
+package com.zenika.academy.woodblocktoys.Order;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;

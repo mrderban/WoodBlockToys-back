@@ -1,4 +1,4 @@
-package com.zenika.academy.blocks.Account;
+package com.zenika.academy.woodblocktoys.Account;
 
 
 import lombok.*;

@@ -1,7 +1,7 @@
-package com.zenika.academy.blocks.Order;
+package com.zenika.academy.woodblocktoys.Order;
 
-import com.zenika.academy.blocks.Account.Account;
-import com.zenika.academy.blocks.Barrel.Barrel;
+import com.zenika.academy.woodblocktoys.Account.Account;
+import com.zenika.academy.woodblocktoys.Barrel.Barrel;
 import lombok.*;
 import javax.persistence.*;
 import java.io.Serializable;
