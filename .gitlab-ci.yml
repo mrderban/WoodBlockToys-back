@@ -1,0 +1,35 @@
+image: docker:latest
+services:
+  - docker:dind
+
+variables:
+  DOCKER_DRIVER: overlay
+  SPRING_PROFILES_ACTIVE: dev
+
+stages:
+  - build
+  - package
+ # - deploy
+
+maven-build:
+  image: maven:3-jdk-11
+  stage: build
+  script: "mvn package -B"
+  artifacts:
+    paths:
+      - target/*.jar
+
+docker-build:
+  stage: package
+  script:
+    - docker build -t registry.gitlab.com/mrderban/woodblocktoys .
+    - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN registry.gitlab.com
+    - docker push registry.gitlab.com/mrderban/woodblocktoys
+
+ssh-deploy:
+  image: kroniak/ssh-client
+  stage: deploy
+  script:
+    - echo "$SSH_KEY" > gcloud-test
+    - chmod 400 gcloud-test
+    - ssh -o StrictHostKeyChecking=no -i gcloud-test ubuntu@35.246.47.186 -C "echo coucou"

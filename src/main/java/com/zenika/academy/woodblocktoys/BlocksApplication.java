@@ -1,4 +1,4 @@
-package com.zenika.academy.blocks;
+package com.zenika.academy.woodblocktoys;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

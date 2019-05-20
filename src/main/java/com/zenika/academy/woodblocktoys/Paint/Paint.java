@@ -1,4 +1,4 @@
-package com.zenika.academy.blocks.Paint;
+package com.zenika.academy.woodblocktoys.Paint;
 
 import lombok.*;
 import javax.persistence.*;

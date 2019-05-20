@@ -1,0 +1,26 @@
+# Use postgres/example user/password credentials
+version: '3.1'
+
+services:
+  db:
+    image: postgres
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: pepe256
+      POSTGRES_DB: woodblocktoys
+    ports:
+      - 5432:5432
+    networks:
+      - postgres
+
+  app:
+    image: registry.gitlab.com/mrderban/woodblocktoys
+    ports:
+      - 8080:8080
+    networks:
+      - postgres
+
+networks:
+  postgres:
+    driver: bridge
