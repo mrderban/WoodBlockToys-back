@@ -1,4 +1,4 @@
-package com.zenika.academy.woodblocktoys.Wood;
+package com.zenika.academy.woodblocktoys.Height;
 
 import lombok.*;
 
@@ -14,17 +14,14 @@ import java.io.Serializable;
 @Setter
 
 @Entity
-@Table(name = "main_blocks_wood")
-public class Wood implements Serializable {
+@Table(name = "main_blocks_height")
+public class Height implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(updatable = false, nullable = false)
     private Long id;
 
-    @Column(name = "wood_price")
-    private double volumePrice;
-
-    @Column(name = "wood_type")
-    private String type;
+    @Column(name = "height_value")
+    private double value;
 
 }

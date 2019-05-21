@@ -1,6 +1,7 @@
 package com.zenika.academy.woodblocktoys.Paint;
 
 import lombok.*;
+
 import javax.persistence.*;
 import java.io.Serializable;
 
@@ -21,7 +22,7 @@ public class Paint implements Serializable {
     private Long id;
 
     @Column(name = "paint_price")
-    private double price;
+    private double surfacePrice;
 
     @Column(name = "paint_type")
     private String type;

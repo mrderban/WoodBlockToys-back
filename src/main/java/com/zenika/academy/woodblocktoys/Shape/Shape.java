@@ -1,4 +1,4 @@
-package com.zenika.academy.woodblocktoys.Wood;
+package com.zenika.academy.woodblocktoys.Shape;
 
 import lombok.*;
 
@@ -14,17 +14,15 @@ import java.io.Serializable;
 @Setter
 
 @Entity
-@Table(name = "main_blocks_wood")
-public class Wood implements Serializable {
+@Table(name = "main_blocks_shape")
+public class Shape implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(updatable = false, nullable = false)
     private Long id;
 
-    @Column(name = "wood_price")
-    private double volumePrice;
 
-    @Column(name = "wood_type")
+    @Column(name = "shape_type")
     private String type;
 
 }

@@ -9,7 +9,7 @@ variables:
 stages:
   - build
   - package
- # - deploy
+  # - deploy
 
 maven-build:
   image: maven:3-jdk-11
@@ -26,10 +26,10 @@ docker-build:
     - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN registry.gitlab.com
     - docker push registry.gitlab.com/mrderban/woodblocktoys
 
-ssh-deploy:
-  image: kroniak/ssh-client
-  stage: deploy
-  script:
-    - echo "$SSH_KEY" > gcloud-test
-    - chmod 400 gcloud-test
-    - ssh -o StrictHostKeyChecking=no -i gcloud-test ubuntu@35.246.47.186 -C "echo coucou"
+    #ssh-deploy:
+    # image: kroniak/ssh-client
+    #stage: deploy
+    #script:
+    # - echo "$SSH_KEY" > gcloud-test
+    #- chmod 400 gcloud-test
+    #- ssh -o StrictHostKeyChecking=no -i gcloud-test ubuntu@35.246.47.186 -C "echo coucou"
