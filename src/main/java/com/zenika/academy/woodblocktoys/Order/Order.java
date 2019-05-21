@@ -3,6 +3,7 @@ package com.zenika.academy.woodblocktoys.Order;
 import com.zenika.academy.woodblocktoys.Account.Account;
 import com.zenika.academy.woodblocktoys.Barrel.Barrel;
 import lombok.*;
+
 import javax.persistence.*;
 import java.io.Serializable;
 import java.time.LocalDate;
@@ -24,22 +25,13 @@ public class Order implements Serializable {
     private Long id;
 
     @Column(name = "order_date")
-    private LocalDate date;
+    private LocalDate createdAt;
 
-    @Column(name = "order_payment_state")
-    private Boolean isPaid;
+    @Column(name = "order_price")
+    private double price;
 
-    @Column(name = "order_validation_state")
-    private Boolean isValidated;
-
-    @Column(name = "order_building_state")
-    private Boolean isBuilt;
-
-    @Column(name = "order_send_state")
-    private Boolean isSent;
-
-    @Column(name = "order_reception_state")
-    private Boolean isReceived;
+    @Column(name = "order_state")
+    private OrderState orderState;
 
     @ManyToOne
     private Account account;

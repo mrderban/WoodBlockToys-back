@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.zenika.academy.woodblocktoys.Account.Account;
+import com.zenika.academy.woodblocktoys.Barrel.Barrel;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -27,10 +28,8 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 
 @RunWith(SpringRunner.class)
 @ActiveProfiles(profiles = "dev")
-@SpringBootTest() // permet de charger les repository
+@SpringBootTest()
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
-//recharge le contexte entre chaque test permettant ainsi
-// de ne rien inscrire dans la base à la fin du test.
 public class BlocksApplicationTests {
 
     /************************VARIABLES************************/
@@ -45,6 +44,7 @@ public class BlocksApplicationTests {
             .lastname("Dupont")
             .mail("dupont@gmail.com")
             .password("245xxv69")
+            .phoneNumber("02.01.03.26.89")
             .address("16 rue du pape")
             .build();
 
@@ -55,6 +55,7 @@ public class BlocksApplicationTests {
             .mail("dupont@gmail.com")
             .password("245xxv69")
             .address("20 rue du maire")
+            .phoneNumber("05.01.03.29.89")
             .build();
 
     private Account updatedAccount1 = Account.builder()
@@ -64,6 +65,7 @@ public class BlocksApplicationTests {
             .mail("UPDATED@gmail.com")
             .password("245xxv69")
             .address("16 rue du pape")
+            .phoneNumber("06.01.03.86.89")
             .build();
 
     private Account account2 = Account.builder()
@@ -72,16 +74,8 @@ public class BlocksApplicationTests {
             .lastname("Dupont")
             .mail("dupont2@gmail.com")
             .password("xxxyyyzzz")
+            .phoneNumber("02.78.03.26.95")
             .address("19 rue du dentiste")
-            .build();
-
-    private Account account3 = Account.builder()
-            .firstname("Jean")
-            .id(3L)
-            .lastname("Roger")
-            .mail("roger@gmail.com")
-            .password("245xxv69")
-            .address("36 quai des fonctionnaires")
             .build();
 
 
@@ -97,10 +91,22 @@ public class BlocksApplicationTests {
                 .andReturn().getResponse();
     }
 
+    private MockHttpServletResponse addBarrel(Barrel barrel) throws Exception {
+        String jsonInputBarrel = this.jsonBarrel.write(barrel).getJson();
+
+        return mvc.perform(
+                post("/barrels/")
+                        .accept(APPLICATION_JSON_UTF8)
+                        .contentType(APPLICATION_JSON_UTF8)
+                        .content(jsonInputBarrel))
+                .andReturn().getResponse();
+    }
 
     /************************JACKSON************************/
     private JacksonTester<Account> jsonAccount; //JSON <-> Account translator
     private JacksonTester<Iterable<Account>> jsonListAccount; //JSON <-> Account List translator
+    private JacksonTester<Barrel> jsonBarrel; //JSON <-> Barrel translator
+    private JacksonTester<Iterable<Barrel>> jsonListBarrel; //JSON <-> Barrel List translator
 
 
     /************************SETUP************************/
@@ -256,5 +262,6 @@ public class BlocksApplicationTests {
         MockHttpServletResponse response = addAccount(account11);
         assertThat(response.getStatus()).isEqualTo(HttpStatus.CONFLICT.value());
     }
+
 }
 

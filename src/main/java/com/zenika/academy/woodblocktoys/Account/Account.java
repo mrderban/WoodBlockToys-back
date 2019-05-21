@@ -44,6 +44,9 @@ public class Account implements Serializable {
     @Column(name = "account_address")
     private String address;
 
+    @Column(name = "account_phone")
+    private String phoneNumber;
+
     @Column(name = "account_mail", unique = true)
     @Email(message = "Please enter a valid email adress")
     private String mail;
@@ -52,4 +55,5 @@ public class Account implements Serializable {
     @Size(min = 5, message = "Password must be at least 5 characters long")
     @Column(name = "account_password")
     private String password;
+
 }
