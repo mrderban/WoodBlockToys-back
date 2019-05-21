@@ -24,7 +24,7 @@ public class Wood implements Serializable {
     @Column(name = "wood_price")
     private double volumePrice;
 
-    @Column(name = "wood_type")
+    @Column(name = "wood_type", unique = true)
     private String type;
 
 }

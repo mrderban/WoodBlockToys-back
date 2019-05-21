@@ -21,7 +21,7 @@ public class Color implements Serializable {
     @Column(updatable = false, nullable = false)
     private Long id;
 
-    @Column(name = "color_type")
+    @Column(name = "color_type", unique = true)
     private String type;
 
 }

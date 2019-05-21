@@ -21,7 +21,7 @@ public class Height implements Serializable {
     @Column(updatable = false, nullable = false)
     private Long id;
 
-    @Column(name = "height_value")
+    @Column(name = "height_value", unique = true)
     private double value;
 
 }

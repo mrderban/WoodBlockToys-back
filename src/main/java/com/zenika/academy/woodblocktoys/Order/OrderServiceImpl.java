@@ -5,7 +5,6 @@ import com.zenika.academy.woodblocktoys.Account.Account;
 import com.zenika.academy.woodblocktoys.Account.AccountService;
 import com.zenika.academy.woodblocktoys.Barrel.Barrel;
 import com.zenika.academy.woodblocktoys.Barrel.BarrelRepository;
-import com.zenika.academy.woodblocktoys.Barrel.BarrelService;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -13,7 +12,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import static com.zenika.academy.woodblocktoys.Order.OrderState.WAITING_VALIDATION;
+import static com.zenika.academy.woodblocktoys.Order.OrderState.WAITING_FOR_VALIDATION;
+
 
 @Service
 public class OrderServiceImpl implements OrderService {
@@ -21,14 +21,12 @@ public class OrderServiceImpl implements OrderService {
     /************************VARIABLES & CONSTRUCTOR************************/
     private final OrderRepository orderRepository;
     private final AccountService accountService;
-    private final BarrelService barrelService;
     private final BarrelRepository barrelRepository;
 
-    public OrderServiceImpl(OrderRepository orderRepository, BarrelRepository barrelRepository, AccountService accountService, BarrelService barrelService, BarrelRepository barrelRepository1) {
+    public OrderServiceImpl(OrderRepository orderRepository, BarrelRepository barrelRepository, AccountService accountService) {
         this.orderRepository = orderRepository;
         this.accountService = accountService;
-        this.barrelService = barrelService;
-        this.barrelRepository = barrelRepository1;
+        this.barrelRepository = barrelRepository;
     }
 
     /************************DTO METHODS************************/
@@ -91,7 +89,7 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public Order saveOrUpdateOrder(String accountMail, Long barrelId) {
         Optional<Account> retrievedAccount = accountService.getAccountByMail(accountMail);
-        Optional<Barrel> retrievedBarrel = barrelService.getBarrelById(barrelId);
+        Optional<Barrel> retrievedBarrel = barrelRepository.findById(barrelId);
 
         if (retrievedBarrel.isEmpty()) {
             throw new IllegalArgumentException("Cannot retrieve barrel");
@@ -105,7 +103,7 @@ public class OrderServiceImpl implements OrderService {
                     .barrel(retrievedBarrel.get())
                     .account(retrievedAccount.get())
                     .createdAt(LocalDate.now())
-                    .orderState(WAITING_VALIDATION)
+                    .orderState(WAITING_FOR_VALIDATION)
                     .build();
             return orderRepository.save(order);
         }

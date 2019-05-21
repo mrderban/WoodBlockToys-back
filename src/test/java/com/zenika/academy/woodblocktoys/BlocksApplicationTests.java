@@ -5,6 +5,11 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.zenika.academy.woodblocktoys.Account.Account;
 import com.zenika.academy.woodblocktoys.Barrel.Barrel;
+import com.zenika.academy.woodblocktoys.Color.Color;
+import com.zenika.academy.woodblocktoys.Height.Height;
+import com.zenika.academy.woodblocktoys.Paint.Paint;
+import com.zenika.academy.woodblocktoys.Shape.Shape;
+import com.zenika.academy.woodblocktoys.Wood.Wood;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -38,6 +43,60 @@ public class BlocksApplicationTests {
     private WebApplicationContext context;
 
     /************************HELPER OBJECTS************************/
+    private Color color1 = Color.builder()
+            .id(1L)
+            .type("blue")
+            .build();
+
+    private Color color2 = Color.builder()
+            .id(2L)
+            .type("red")
+            .build();
+
+    private Height height1 = Height.builder()
+            .id(1L)
+            .value(1.0)
+            .build();
+
+    private Height height2 = Height.builder()
+            .id(2L)
+            .value(7.0)
+            .build();
+
+    private Shape shape1 = Shape.builder()
+            .id(1L)
+            .type("circle")
+            .build();
+
+    private Shape shape2 = Shape.builder()
+            .id(2L)
+            .type("square")
+            .build();
+
+    private Wood wood1 = Wood.builder()
+            .id(1L)
+            .type("oak")
+            .volumePrice(10.0)
+            .build();
+
+    private Wood wood2 = Wood.builder()
+            .id(2L)
+            .type("beech")
+            .volumePrice(12.0)
+            .build();
+
+    private Paint paint1 = Paint.builder()
+            .id(1L)
+            .surfacePrice(0.9)
+            .type("brillante")
+            .build();
+
+    private Paint paint2 = Paint.builder()
+            .id(2L)
+            .surfacePrice(0.3)
+            .type("mate")
+            .build();
+
     private Account account1 = Account.builder()
             .firstname("Jean")
             .id(1L)
@@ -91,6 +150,46 @@ public class BlocksApplicationTests {
                 .andReturn().getResponse();
     }
 
+    private MockHttpServletResponse addColor(Color color) throws Exception {
+        String jsonInputColor = this.jsonColor.write(color).getJson();
+        return mvc.perform(
+                post("/colors/")
+                        .accept(APPLICATION_JSON_UTF8)
+                        .contentType(APPLICATION_JSON_UTF8)
+                        .content(jsonInputColor))
+                .andReturn().getResponse();
+    }
+
+    private MockHttpServletResponse addWood(Wood wood) throws Exception {
+        String jsonInputWood = this.jsonWood.write(wood).getJson();
+        return mvc.perform(
+                post("/woods/")
+                        .accept(APPLICATION_JSON_UTF8)
+                        .contentType(APPLICATION_JSON_UTF8)
+                        .content(jsonInputWood))
+                .andReturn().getResponse();
+    }
+
+    private MockHttpServletResponse addShape(Shape shape) throws Exception {
+        String jsonInputShape = this.jsonShape.write(shape).getJson();
+        return mvc.perform(
+                post("/shapes/")
+                        .accept(APPLICATION_JSON_UTF8)
+                        .contentType(APPLICATION_JSON_UTF8)
+                        .content(jsonInputShape))
+                .andReturn().getResponse();
+    }
+
+    private MockHttpServletResponse addPaint(Paint paint) throws Exception {
+        String jsonInputPaint = this.jsonPaint.write(paint).getJson();
+        return mvc.perform(
+                post("/paints/")
+                        .accept(APPLICATION_JSON_UTF8)
+                        .contentType(APPLICATION_JSON_UTF8)
+                        .content(jsonInputPaint))
+                .andReturn().getResponse();
+    }
+
     private MockHttpServletResponse addBarrel(Barrel barrel) throws Exception {
         String jsonInputBarrel = this.jsonBarrel.write(barrel).getJson();
 
@@ -102,11 +201,26 @@ public class BlocksApplicationTests {
                 .andReturn().getResponse();
     }
 
+    private MockHttpServletResponse addHeight(Height height) throws Exception {
+        String jsonInputHeight = this.jsonHeight.write(height).getJson();
+
+        return mvc.perform(
+                post("/heights/")
+                        .accept(APPLICATION_JSON_UTF8)
+                        .contentType(APPLICATION_JSON_UTF8)
+                        .content(jsonInputHeight))
+                .andReturn().getResponse();
+    }
+
     /************************JACKSON************************/
     private JacksonTester<Account> jsonAccount; //JSON <-> Account translator
     private JacksonTester<Iterable<Account>> jsonListAccount; //JSON <-> Account List translator
     private JacksonTester<Barrel> jsonBarrel; //JSON <-> Barrel translator
-    private JacksonTester<Iterable<Barrel>> jsonListBarrel; //JSON <-> Barrel List translator
+    private JacksonTester<Color> jsonColor;
+    private JacksonTester<Paint> jsonPaint;
+    private JacksonTester<Wood> jsonWood;
+    private JacksonTester<Shape> jsonShape;
+    private JacksonTester<Height> jsonHeight;
 
 
     /************************SETUP************************/
@@ -262,6 +376,32 @@ public class BlocksApplicationTests {
         MockHttpServletResponse response = addAccount(account11);
         assertThat(response.getStatus()).isEqualTo(HttpStatus.CONFLICT.value());
     }
+    //************************CUSTOMER INTEGRATION TESTS************************//
 
+    /************************CAS LIMITES************************/
+
+    @Test
+    public void createBarrelTest() throws Exception {
+        this.addColor(color1);
+        this.addColor(color2);
+        this.addPaint(paint1);
+        this.addPaint(paint2);
+        this.addWood(wood1);
+        this.addWood(wood2);
+        this.addShape(shape1);
+        this.addShape(shape2);
+        this.addHeight(height1);
+        this.addHeight(height2);
+
+
+        //order book1
+        MockHttpServletResponse postResponse1 = mvc.perform(
+                post("/barrels/10")
+                        .contentType(APPLICATION_JSON_UTF8))
+                .andReturn().getResponse();
+
+        assertThat(postResponse1.getStatus()).isEqualTo(HttpStatus.OK.value());
+
+    }
 }
 

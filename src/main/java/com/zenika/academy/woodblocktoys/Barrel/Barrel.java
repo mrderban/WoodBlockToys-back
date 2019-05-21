@@ -30,7 +30,7 @@ public class Barrel implements Serializable {
     @Column(name = "barrel_quantity")
     private int blockQuantity;
 
-    @Cascade(org.hibernate.annotations.CascadeType.ALL)
+    @Cascade(org.hibernate.annotations.CascadeType.MERGE)
     @OneToMany(fetch = FetchType.EAGER)
     private Collection<Block> blockList;
 

@@ -30,7 +30,8 @@ public class Order implements Serializable {
     @Column(name = "order_price")
     private double price;
 
-    @Column(name = "order_state")
+    @Enumerated(EnumType.STRING)
+    @Column(length = 30, name = "order_state")
     private OrderState orderState;
 
     @ManyToOne
