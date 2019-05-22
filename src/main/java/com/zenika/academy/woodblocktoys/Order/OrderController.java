@@ -22,7 +22,6 @@ public class OrderController {
     /************************VARIABLES & CONSTRUCTOR************************/
     private final OrderService orderService;
 
-    //constructor w/ dependency injection
     public OrderController(OrderService orderService, AccountService accountService) {
         this.orderService = orderService;
     }
@@ -31,7 +30,6 @@ public class OrderController {
     /************************POST & DEL METHODS************************/
     @PostMapping(path = "/{mail}/buy/{id}", produces = APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<OrderDto> createOrder(@PathVariable String mail, @PathVariable long id) {
-        //TODO implement barrel repository
         log.info("{mail} trying to order barrel with id {id}" + mail + id);
         try {
             Order order = orderService.saveOrUpdateOrder(mail, id);

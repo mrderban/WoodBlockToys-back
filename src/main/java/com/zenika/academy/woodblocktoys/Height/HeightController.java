@@ -22,10 +22,8 @@ public class HeightController {
 
 
     /************************VARIABLES & CONSTRUCTOR************************/
-    //variables
     private final HeightRepository heightRepository;
 
-    //constructor w/ dependency injection
     public HeightController(HeightRepository heightRepository) {
         this.heightRepository = heightRepository;
     }

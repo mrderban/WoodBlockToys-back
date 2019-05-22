@@ -30,18 +30,16 @@ public class Block implements Serializable {
     private double price;
 
     @Column(name = "block_volume")
-    private double volume;
+    private double volume; // in cm^3
 
     @Column(name = "block_area")
-    private double area;
+    private double area; // in cm²
 
     @Column(name = "block_first_dim")
-    private double firstDim;
+    private double firstDim; // in cm
 
     @Column(name = "block_second_dim")
-    private double secondDim;
-
-    //TODO problématique cascade
+    private double secondDim; // in cm
 
     @OneToOne
     private Color color;

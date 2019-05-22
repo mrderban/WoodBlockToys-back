@@ -6,4 +6,5 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface WoodRepository extends CrudRepository<Wood, Long> {
 
+    Wood findByType(String type);
 }

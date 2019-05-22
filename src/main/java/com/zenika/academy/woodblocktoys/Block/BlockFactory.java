@@ -13,6 +13,7 @@ import com.zenika.academy.woodblocktoys.Wood.Wood;
 import com.zenika.academy.woodblocktoys.Wood.WoodRepository;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.math3.util.Precision;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -23,7 +24,10 @@ import java.util.Random;
 @Data
 @Slf4j
 @Service
-public class BlockService {
+public class BlockFactory {
+
+    /************************VARIABLES & CONSTRUCTOR************************/
+
     private final ColorRepository colorRepository;
     private final ShapeRepository shapeRepository;
     private final HeightRepository heightRepository;
@@ -32,7 +36,7 @@ public class BlockService {
     private final BlockRepository blockRepository;
     private final ColorController colorController;
 
-    public BlockService(ColorRepository colorRepository, ShapeRepository shapeRepository, HeightRepository heightRepository, WoodRepository woodRepository, PaintRepository paintRepository, BlockRepository blockRepository, ColorController colorController) {
+    public BlockFactory(ColorRepository colorRepository, ShapeRepository shapeRepository, HeightRepository heightRepository, WoodRepository woodRepository, PaintRepository paintRepository, BlockRepository blockRepository, ColorController colorController) {
         this.colorRepository = colorRepository;
         this.shapeRepository = shapeRepository;
         this.heightRepository = heightRepository;
@@ -41,6 +45,8 @@ public class BlockService {
         this.blockRepository = blockRepository;
         this.colorController = colorController;
     }
+
+    /************************HELPER METHODS************************/
 
     public List<Color> getAllColors() {
         List<Color> colors = new ArrayList<>();
@@ -72,84 +78,98 @@ public class BlockService {
         return paints;
     }
 
-    public Block makeBlock() {
-        log.info("Trying to generate a block");
-        log.info("Fetching materials data");
+    public double roundToHalf(double d) {
+        return Math.round(d * 2) / 2.0;
+    }
 
-        //import choices from database
+    public double roundToTwoDecimals(double d) {
+        return Precision.round(d, 3);
+    }
+
+    /************************BLOCK FACTORY************************/
+
+    public Block makeBlock(String paintChoice) {
+        log.info("Trying to generate a block");
+        log.info("Fetching materials data from database");
         List<Shape> shapeChoices = getAllShapes();
         List<Height> heightChoices = getAllHeights();
         List<Wood> woodChoices = getAllWoods();
         List<Color> colorChoices = getAllColors();
-        List<Paint> paintChoices = getAllPaints();
 
-        //base price
+        //define base price
         double currentPrice = 0.35;
 
-        log.info("Picking a random volume");
-        //pick random volume between 10 and 30 cm3
+        log.info("Picking a random volume between 10 and 30 cm^3");
         int randomVolume = new Random().nextInt((30 - 10) + 1) + 10;
 
-        //shuffle choices
+        log.info("Shuffling list of materials");
         try {
             Collections.shuffle(colorChoices);
             Collections.shuffle(shapeChoices);
             Collections.shuffle(heightChoices);
             Collections.shuffle(woodChoices);
-            Collections.shuffle(paintChoices);
         } catch (UnsupportedOperationException e) {
             log.info("The given list or its list-iterator does not support the set operation ", e);
         }
 
         //picking
-        log.info("Picking materials");
+        log.info("Picking materials from shuffled lists");
         Color colorPicked = colorChoices.get(0);
         Height heightPicked = heightChoices.get(0);
         Wood woodPicked = woodChoices.get(0);
-        Paint paintPicked = paintChoices.get(0);
+        Paint paintPicked = paintRepository.findByType(paintChoice);
         Shape shapePicked = shapeChoices.get(0);
 
-        //start compute price using block volume
+        //if no paint (raw type) reassign woodPicked to 'pin'
+        if (paintPicked.getType().equals("raw")) {
+            woodPicked = woodRepository.findByType("pin");
+        }
+
+        log.info("Converting volume and surface prices from €/m² & €/m^3 to €/cm² & €/cm^3 ");
+        woodPicked.setVolumePrice(woodPicked.getVolumePrice() * Math.pow(10, -6));
+        paintPicked.setSurfacePrice(paintPicked.getSurfacePrice() * Math.pow(10, -4));
+
+        log.info("Computing volume related price");
         currentPrice += woodPicked.getVolumePrice() * 3.0 * randomVolume;
 
-        //compute area
-        double currentArea = 0;
-        double surfaceBase = 0;
+        log.info("Computing block total area");
+        double totalArea = 0;
+        double sectionArea;
         double firstDim = 0;
         double secondDim = 0;
 
         switch (shapePicked.getType()) {
             case "circle":
-                surfaceBase = randomVolume / heightPicked.getValue();
-                firstDim = Math.sqrt(surfaceBase / Math.PI);
-                currentArea = (2 * surfaceBase) + (2 * Math.PI * firstDim * heightPicked.getValue());
+                sectionArea = randomVolume / heightPicked.getValue();
+                firstDim = Math.sqrt(sectionArea / Math.PI);
+                totalArea = (2 * sectionArea) + (2 * Math.PI * firstDim * heightPicked.getValue());
                 break;
 
             case "square":
-                surfaceBase = randomVolume / heightPicked.getValue();
-                firstDim = Math.sqrt(surfaceBase);
-                currentArea = (2 * surfaceBase) + (4 * firstDim * heightPicked.getValue());
+                sectionArea = randomVolume / heightPicked.getValue();
+                firstDim = Math.sqrt(sectionArea);
+                totalArea = (2 * sectionArea) + (4 * firstDim * heightPicked.getValue());
                 break;
         }
 
-        //increment price using block area
-        currentPrice += (paintPicked.getSurfacePrice() * 3 * currentArea);
+        //increment price using block total area
+        currentPrice += (paintPicked.getSurfacePrice() * 3.0 * totalArea);
 
-        //TODO Careful w/ conversions
         //add TVA
         currentPrice = currentPrice * 1.20;
 
-        //build block
+        //build block and round double values to nearest 0.5
         Block currentBlock = Block.builder()
                 .volume(randomVolume)
                 .color(colorPicked)
                 .wood(woodPicked)
                 .paint(paintPicked)
                 .height(heightPicked)
-                .price(currentPrice)
-                .area(currentArea)
-                .firstDim(firstDim)
-                .secondDim(secondDim)
+                .shape(shapePicked)
+                .price(roundToTwoDecimals(currentPrice))
+                .area(roundToHalf(totalArea))
+                .firstDim(roundToHalf(firstDim))
+                .secondDim(roundToHalf(secondDim))
                 .build();
 
         return blockRepository.save(currentBlock);

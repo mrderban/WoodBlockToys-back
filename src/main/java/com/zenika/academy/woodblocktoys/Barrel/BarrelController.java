@@ -2,9 +2,10 @@ package com.zenika.academy.woodblocktoys.Barrel;
 
 
 import com.zenika.academy.woodblocktoys.Block.Block;
+import com.zenika.academy.woodblocktoys.Block.BlockFactory;
 import com.zenika.academy.woodblocktoys.Block.BlockRepository;
-import com.zenika.academy.woodblocktoys.Block.BlockService;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.math3.util.Precision;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -23,36 +24,39 @@ public class BarrelController {
 
 
     /************************VARIABLES & CONSTRUCTOR************************/
-    //variables
     private final BarrelRepository barrelRepository;
-    private final BlockService blockService;
-    private final BlockRepository blockRepository;
+    private final BlockFactory blockFactory;
 
-    //constructor w/ dependency injection
-    public BarrelController(BarrelRepository barrelRepository, BlockService blockService, BlockRepository blockRepository) {
+    public BarrelController(BarrelRepository barrelRepository, BlockFactory blockFactory, BlockRepository blockRepository) {
         this.barrelRepository = barrelRepository;
-        this.blockService = blockService;
-        this.blockRepository = blockRepository;
+        this.blockFactory = blockFactory;
+    }
+
+    /************************HELPER METHODS************************/
+    public double roundToTwoDecimals(double d) {
+        return Precision.round(d, 3);
     }
 
 
     /************************POST & DEL & PUT************************/
-    @PostMapping(path = "/{maxPrice}", produces = APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity<Barrel> createBarrel(@PathVariable double maxPrice) {
-        log.info("Building a barrel with a max price of {} €", maxPrice);
+    @PostMapping(path = "/{maxPrice}/{paintChoice}", produces = APPLICATION_JSON_UTF8_VALUE)
+    public ResponseEntity<Barrel> createBarrel(@PathVariable double maxPrice, @PathVariable String paintChoice) {
+        log.info("Building a barrel with a max price of {} € with paint {}", maxPrice, paintChoice);
         double currentBarrelPrice = 0;
         int currentBarrelQty = 0;
         List<Block> currentBlockList = new ArrayList<>();
-        //while (currentBarrelPrice < 50) {
-        for (int i = 0; i < 5; i++) {
-            Block currentBlock = blockService.makeBlock();
-            currentBarrelPrice += currentBlock.getPrice();
+        while (currentBarrelPrice < maxPrice) {
+            Block currentBlock = blockFactory.makeBlock(paintChoice);
             currentBarrelQty += 1;
             currentBlockList.add(currentBlock);
+            if (currentBarrelPrice + currentBlock.getPrice() > maxPrice) {
+                break;
+            }
+            currentBarrelPrice += currentBlock.getPrice();
         }
         Barrel newBarrel = Barrel.builder()
                 .blockQuantity(currentBarrelQty)
-                .price(currentBarrelPrice)
+                .price(roundToTwoDecimals(currentBarrelPrice))
                 .blockList(currentBlockList)
                 .build();
 

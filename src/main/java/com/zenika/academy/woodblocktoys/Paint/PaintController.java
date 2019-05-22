@@ -22,10 +22,8 @@ public class PaintController {
 
 
     /************************VARIABLES & CONSTRUCTOR************************/
-    //variables
     private final PaintRepository paintRepository;
 
-    //constructor w/ dependency injection
     public PaintController(PaintRepository paintRepository) {
         this.paintRepository = paintRepository;
     }

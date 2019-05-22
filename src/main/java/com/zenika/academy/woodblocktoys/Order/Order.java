@@ -16,7 +16,7 @@ import java.time.LocalDate;
 @Getter
 @Setter
 
-@Entity // entité JPA
+@Entity
 @Table(name = "main_blocks_order")
 public class Order implements Serializable {
     @Id

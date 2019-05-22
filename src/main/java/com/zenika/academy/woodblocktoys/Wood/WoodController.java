@@ -21,10 +21,9 @@ public class WoodController {
 
 
     /************************VARIABLES & CONSTRUCTOR************************/
-    //variables
+
     private final WoodRepository woodRepository;
 
-    //constructor w/ dependency injection
     public WoodController(WoodRepository woodRepository) {
         this.woodRepository = woodRepository;
     }

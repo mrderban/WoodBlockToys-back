@@ -21,10 +21,8 @@ public class ShapeController {
 
 
     /************************VARIABLES & CONSTRUCTOR************************/
-    //variables
     private final ShapeRepository shapeRepository;
 
-    //constructor w/ dependency injection
     public ShapeController(ShapeRepository shapeRepository) {
         this.shapeRepository = shapeRepository;
     }

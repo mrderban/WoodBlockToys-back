@@ -7,6 +7,7 @@ import com.zenika.academy.woodblocktoys.Account.Account;
 import com.zenika.academy.woodblocktoys.Barrel.Barrel;
 import com.zenika.academy.woodblocktoys.Color.Color;
 import com.zenika.academy.woodblocktoys.Height.Height;
+import com.zenika.academy.woodblocktoys.Order.OrderDto;
 import com.zenika.academy.woodblocktoys.Paint.Paint;
 import com.zenika.academy.woodblocktoys.Shape.Shape;
 import com.zenika.academy.woodblocktoys.Wood.Wood;
@@ -103,7 +104,7 @@ public class BlocksApplicationTests {
             .lastname("Dupont")
             .mail("dupont@gmail.com")
             .password("245xxv69")
-            .phoneNumber("02.01.03.26.89")
+            .phoneNumber("06.01.03.86.89")
             .address("16 rue du pape")
             .build();
 
@@ -190,16 +191,6 @@ public class BlocksApplicationTests {
                 .andReturn().getResponse();
     }
 
-    private MockHttpServletResponse addBarrel(Barrel barrel) throws Exception {
-        String jsonInputBarrel = this.jsonBarrel.write(barrel).getJson();
-
-        return mvc.perform(
-                post("/barrels/")
-                        .accept(APPLICATION_JSON_UTF8)
-                        .contentType(APPLICATION_JSON_UTF8)
-                        .content(jsonInputBarrel))
-                .andReturn().getResponse();
-    }
 
     private MockHttpServletResponse addHeight(Height height) throws Exception {
         String jsonInputHeight = this.jsonHeight.write(height).getJson();
@@ -216,6 +207,7 @@ public class BlocksApplicationTests {
     private JacksonTester<Account> jsonAccount; //JSON <-> Account translator
     private JacksonTester<Iterable<Account>> jsonListAccount; //JSON <-> Account List translator
     private JacksonTester<Barrel> jsonBarrel; //JSON <-> Barrel translator
+    private JacksonTester<OrderDto> jsonOrderDto;
     private JacksonTester<Color> jsonColor;
     private JacksonTester<Paint> jsonPaint;
     private JacksonTester<Wood> jsonWood;
@@ -381,7 +373,7 @@ public class BlocksApplicationTests {
     /************************CAS LIMITES************************/
 
     @Test
-    public void createBarrelTest() throws Exception {
+    public void createBarrelMaxPriceTest() throws Exception {
         this.addColor(color1);
         this.addColor(color2);
         this.addPaint(paint1);
@@ -393,15 +385,49 @@ public class BlocksApplicationTests {
         this.addHeight(height1);
         this.addHeight(height2);
 
-
-        //order book1
-        MockHttpServletResponse postResponse1 = mvc.perform(
-                post("/barrels/10")
+        MockHttpServletResponse postResponse = mvc.perform(
+                post("/barrels/10/brillante")
                         .contentType(APPLICATION_JSON_UTF8))
                 .andReturn().getResponse();
 
-        assertThat(postResponse1.getStatus()).isEqualTo(HttpStatus.OK.value());
+        assertThat(postResponse.getStatus()).isEqualTo(HttpStatus.OK.value());
+        assertThat(this.jsonBarrel.parseObject(postResponse.getContentAsString()).getPrice()).isLessThan(10);
+    }
 
+    @Test
+    public void createOrderTest() throws Exception {
+        //add user
+        this.addAccount(account1);
+        //add materials
+        this.addColor(color1);
+        this.addColor(color2);
+        this.addPaint(paint1);
+        this.addPaint(paint2);
+        this.addWood(wood1);
+        this.addWood(wood2);
+        this.addShape(shape1);
+        this.addShape(shape2);
+        this.addHeight(height1);
+        this.addHeight(height2);
+
+        //add barrel
+        MockHttpServletResponse barrelResponse = mvc.perform(
+                post("/barrels/10/brillante")
+                        .contentType(APPLICATION_JSON_UTF8))
+                .andReturn().getResponse();
+
+        assertThat(this.jsonBarrel.parseObject(barrelResponse.getContentAsString()).getId()).isEqualTo(1);
+
+        //post on order controller
+        MockHttpServletResponse orderResponse = mvc.perform(
+                post("/orders/dupont@gmail.com/buy/1")
+                        .contentType(APPLICATION_JSON_UTF8))
+                .andReturn().getResponse();
+
+        assertThat(orderResponse.getStatus()).isEqualTo(HttpStatus.OK.value());
+        assertThat(this.jsonOrderDto.parseObject(orderResponse.getContentAsString()).getBarrelId()).isEqualTo(1);
+        assertThat(this.jsonOrderDto.parseObject(orderResponse.getContentAsString()).getAccountMail()).isEqualTo("dupont@gmail.com");
+        assertThat(this.jsonOrderDto.parseObject(orderResponse.getContentAsString()).getPrice()).isEqualTo(this.jsonBarrel.parseObject(barrelResponse.getContentAsString()).getPrice());
     }
 }
 
