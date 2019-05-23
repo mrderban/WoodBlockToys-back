@@ -6,9 +6,9 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.zenika.academy.woodblocktoys.Account.Account;
 import com.zenika.academy.woodblocktoys.Barrel.Barrel;
 import com.zenika.academy.woodblocktoys.Color.Color;
+import com.zenika.academy.woodblocktoys.Finition.Finition;
 import com.zenika.academy.woodblocktoys.Height.Height;
 import com.zenika.academy.woodblocktoys.Order.OrderDto;
-import com.zenika.academy.woodblocktoys.Paint.Paint;
 import com.zenika.academy.woodblocktoys.Shape.Shape;
 import com.zenika.academy.woodblocktoys.Wood.Wood;
 import org.junit.Before;
@@ -86,13 +86,13 @@ public class BlocksApplicationTests {
             .volumePrice(12.0)
             .build();
 
-    private Paint paint1 = Paint.builder()
+    private Finition finition1 = Finition.builder()
             .id(1L)
             .surfacePrice(0.9)
             .type("brillante")
             .build();
 
-    private Paint paint2 = Paint.builder()
+    private Finition finition2 = Finition.builder()
             .id(2L)
             .surfacePrice(0.3)
             .type("mate")
@@ -181,13 +181,13 @@ public class BlocksApplicationTests {
                 .andReturn().getResponse();
     }
 
-    private MockHttpServletResponse addPaint(Paint paint) throws Exception {
-        String jsonInputPaint = this.jsonPaint.write(paint).getJson();
+    private MockHttpServletResponse addFinition(Finition finition) throws Exception {
+        String jsonInputFinition = this.jsonFinition.write(finition).getJson();
         return mvc.perform(
-                post("/paints/")
+                post("/finitions/")
                         .accept(APPLICATION_JSON_UTF8)
                         .contentType(APPLICATION_JSON_UTF8)
-                        .content(jsonInputPaint))
+                        .content(jsonInputFinition))
                 .andReturn().getResponse();
     }
 
@@ -209,7 +209,7 @@ public class BlocksApplicationTests {
     private JacksonTester<Barrel> jsonBarrel; //JSON <-> Barrel translator
     private JacksonTester<OrderDto> jsonOrderDto;
     private JacksonTester<Color> jsonColor;
-    private JacksonTester<Paint> jsonPaint;
+    private JacksonTester<Finition> jsonFinition;
     private JacksonTester<Wood> jsonWood;
     private JacksonTester<Shape> jsonShape;
     private JacksonTester<Height> jsonHeight;
@@ -243,11 +243,9 @@ public class BlocksApplicationTests {
     @Test
     public void getAllAccountsTest() throws Exception {
         //given account1 & account2
-        List accountList = List.of(account1, account2);
+        List accountList = List.of(account1);
 
         this.addAccount(account1);
-        this.addAccount(account2);
-
 
         MockHttpServletResponse getResponse;
         getResponse = mvc.perform(
@@ -376,8 +374,8 @@ public class BlocksApplicationTests {
     public void createBarrelMaxPriceTest() throws Exception {
         this.addColor(color1);
         this.addColor(color2);
-        this.addPaint(paint1);
-        this.addPaint(paint2);
+        this.addFinition(finition1);
+        this.addFinition(finition2);
         this.addWood(wood1);
         this.addWood(wood2);
         this.addShape(shape1);
@@ -401,8 +399,8 @@ public class BlocksApplicationTests {
         //add materials
         this.addColor(color1);
         this.addColor(color2);
-        this.addPaint(paint1);
-        this.addPaint(paint2);
+        this.addFinition(finition1);
+        this.addFinition(finition2);
         this.addWood(wood1);
         this.addWood(wood2);
         this.addShape(shape1);

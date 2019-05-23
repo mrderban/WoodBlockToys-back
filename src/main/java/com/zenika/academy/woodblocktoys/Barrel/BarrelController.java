@@ -39,14 +39,14 @@ public class BarrelController {
 
 
     /************************POST & DEL & PUT************************/
-    @PostMapping(path = "/{maxPrice}/{paintChoice}", produces = APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity<Barrel> createBarrel(@PathVariable double maxPrice, @PathVariable String paintChoice) {
-        log.info("Building a barrel with a max price of {} € with paint {}", maxPrice, paintChoice);
+    @PostMapping(path = "/{maxPrice}/{finitionChoice}", produces = APPLICATION_JSON_UTF8_VALUE)
+    public ResponseEntity<Barrel> createBarrel(@PathVariable double maxPrice, @PathVariable String finitionChoice) {
+        log.info("Building a barrel with a max price of {} € with finition {}", maxPrice, finitionChoice);
         double currentBarrelPrice = 0;
         int currentBarrelQty = 0;
         List<Block> currentBlockList = new ArrayList<>();
         while (currentBarrelPrice < maxPrice) {
-            Block currentBlock = blockFactory.makeBlock(paintChoice);
+            Block currentBlock = blockFactory.makeBlock(finitionChoice);
             currentBarrelQty += 1;
             currentBlockList.add(currentBlock);
             if (currentBarrelPrice + currentBlock.getPrice() > maxPrice) {

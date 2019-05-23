@@ -1,8 +1,9 @@
-package com.zenika.academy.woodblocktoys.Paint;
+package com.zenika.academy.woodblocktoys.Finition;
 
 import lombok.*;
 
 import javax.persistence.*;
+import javax.validation.constraints.Pattern;
 import java.io.Serializable;
 
 @Data
@@ -15,7 +16,7 @@ import java.io.Serializable;
 
 @Entity
 @Table(name = "main_blocks_paint")
-public class Paint implements Serializable {
+public class Finition implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(updatable = false, nullable = false)
@@ -25,6 +26,7 @@ public class Paint implements Serializable {
     private double surfacePrice;
 
     @Column(name = "paint_type")
+    @Pattern(regexp = "[^0-9]+", message = "Digits are not allowed")
     private String type;
 
 }

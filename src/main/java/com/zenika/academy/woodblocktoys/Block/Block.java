@@ -1,8 +1,8 @@
 package com.zenika.academy.woodblocktoys.Block;
 
 import com.zenika.academy.woodblocktoys.Color.Color;
+import com.zenika.academy.woodblocktoys.Finition.Finition;
 import com.zenika.academy.woodblocktoys.Height.Height;
-import com.zenika.academy.woodblocktoys.Paint.Paint;
 import com.zenika.academy.woodblocktoys.Shape.Shape;
 import com.zenika.academy.woodblocktoys.Wood.Wood;
 import lombok.*;
@@ -51,7 +51,7 @@ public class Block implements Serializable {
     private Shape shape;
 
     @OneToOne
-    private Paint paint;
+    private Finition finition;
 
     @OneToOne
     private Wood wood;

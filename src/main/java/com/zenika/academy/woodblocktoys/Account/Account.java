@@ -45,6 +45,7 @@ public class Account implements Serializable {
     private String address;
 
     @Column(name = "account_phone")
+    //@Pattern(regexp = "^[a-zA-Z]+", message = "Please enter only digits")
     private String phoneNumber;
 
     @Column(name = "account_mail", unique = true)

@@ -3,10 +3,10 @@ package com.zenika.academy.woodblocktoys.Block;
 import com.zenika.academy.woodblocktoys.Color.Color;
 import com.zenika.academy.woodblocktoys.Color.ColorController;
 import com.zenika.academy.woodblocktoys.Color.ColorRepository;
+import com.zenika.academy.woodblocktoys.Finition.Finition;
+import com.zenika.academy.woodblocktoys.Finition.FinitionRepository;
 import com.zenika.academy.woodblocktoys.Height.Height;
 import com.zenika.academy.woodblocktoys.Height.HeightRepository;
-import com.zenika.academy.woodblocktoys.Paint.Paint;
-import com.zenika.academy.woodblocktoys.Paint.PaintRepository;
 import com.zenika.academy.woodblocktoys.Shape.Shape;
 import com.zenika.academy.woodblocktoys.Shape.ShapeRepository;
 import com.zenika.academy.woodblocktoys.Wood.Wood;
@@ -32,16 +32,16 @@ public class BlockFactory {
     private final ShapeRepository shapeRepository;
     private final HeightRepository heightRepository;
     private final WoodRepository woodRepository;
-    private final PaintRepository paintRepository;
+    private final FinitionRepository finitionRepository;
     private final BlockRepository blockRepository;
     private final ColorController colorController;
 
-    public BlockFactory(ColorRepository colorRepository, ShapeRepository shapeRepository, HeightRepository heightRepository, WoodRepository woodRepository, PaintRepository paintRepository, BlockRepository blockRepository, ColorController colorController) {
+    public BlockFactory(ColorRepository colorRepository, ShapeRepository shapeRepository, HeightRepository heightRepository, WoodRepository woodRepository, FinitionRepository finitionRepository, BlockRepository blockRepository, ColorController colorController) {
         this.colorRepository = colorRepository;
         this.shapeRepository = shapeRepository;
         this.heightRepository = heightRepository;
         this.woodRepository = woodRepository;
-        this.paintRepository = paintRepository;
+        this.finitionRepository = finitionRepository;
         this.blockRepository = blockRepository;
         this.colorController = colorController;
     }
@@ -72,10 +72,10 @@ public class BlockFactory {
         return shapes;
     }
 
-    public List<Paint> getAllPaints() {
-        List<Paint> paints = new ArrayList<>();
-        paintRepository.findAll().forEach(paints::add);
-        return paints;
+    public List<Finition> getAllPaints() {
+        List<Finition> finitions = new ArrayList<>();
+        finitionRepository.findAll().forEach(finitions::add);
+        return finitions;
     }
 
     public double roundToHalf(double d) {
@@ -117,17 +117,17 @@ public class BlockFactory {
         Color colorPicked = colorChoices.get(0);
         Height heightPicked = heightChoices.get(0);
         Wood woodPicked = woodChoices.get(0);
-        Paint paintPicked = paintRepository.findByType(paintChoice);
+        Finition finitionPicked = finitionRepository.findByType(paintChoice);
         Shape shapePicked = shapeChoices.get(0);
 
-        //if no paint (raw type) reassign woodPicked to 'pin'
-        if (paintPicked.getType().equals("raw")) {
+        //if no finition (raw type) reassign woodPicked to 'pin'
+        if (finitionPicked.getType().equals("raw")) {
             woodPicked = woodRepository.findByType("pin");
         }
 
         log.info("Converting volume and surface prices from €/m² & €/m^3 to €/cm² & €/cm^3 ");
         woodPicked.setVolumePrice(woodPicked.getVolumePrice() * Math.pow(10, -6));
-        paintPicked.setSurfacePrice(paintPicked.getSurfacePrice() * Math.pow(10, -4));
+        finitionPicked.setSurfacePrice(finitionPicked.getSurfacePrice() * Math.pow(10, -4));
 
         log.info("Computing volume related price");
         currentPrice += woodPicked.getVolumePrice() * 3.0 * randomVolume;
@@ -153,7 +153,7 @@ public class BlockFactory {
         }
 
         //increment price using block total area
-        currentPrice += (paintPicked.getSurfacePrice() * 3.0 * totalArea);
+        currentPrice += (finitionPicked.getSurfacePrice() * 3.0 * totalArea);
 
         //add TVA
         currentPrice = currentPrice * 1.20;
@@ -163,7 +163,7 @@ public class BlockFactory {
                 .volume(randomVolume)
                 .color(colorPicked)
                 .wood(woodPicked)
-                .paint(paintPicked)
+                .finition(finitionPicked)
                 .height(heightPicked)
                 .shape(shapePicked)
                 .price(roundToTwoDecimals(currentPrice))
