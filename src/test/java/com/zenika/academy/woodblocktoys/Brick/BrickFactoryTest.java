@@ -38,7 +38,7 @@ public class BrickFactoryTest {
         Solution solutionIn = Solution.builder()
                 .value(0)
                 .capacity(2)
-                .brickList(brickList)
+                .brickList(new ArrayList<>())
                 .build();
 
         List<Brick> brickList1 = new ArrayList<>();
@@ -53,6 +53,6 @@ public class BrickFactoryTest {
                 .brickList(brickList1)
                 .build();
 
-        assertThat(BrickFactory.knapSack(solutionIn, 3)).isEqualTo(solutionOut);
+        assertThat(BrickFactory.knapSack(brickList, solutionIn, 3)).isEqualTo(solutionOut);
     }
 }
